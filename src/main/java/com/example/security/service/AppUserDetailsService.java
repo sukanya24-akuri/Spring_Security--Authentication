@@ -15,15 +15,14 @@ import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
-public class AppUserDetailsService implements UserDetailsService
-{
-    private  final TravellerRepo repo;
+public class AppUserDetailsService implements UserDetailsService {
+    private final TravellerRepo repo;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Traveller traveller=repo.findByEmail(username)
-                .orElseThrow(()-> new UsernameNotFoundException("invalid email address"));
-        return new User(traveller.getEmail(),traveller.getPassword(), Collections.emptyList());
-        };
+        Traveller traveller = repo.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("invalid email address"));
+        return new User(traveller.getEmail(), traveller.getPassword(), Collections.emptyList());
     }
+}
 

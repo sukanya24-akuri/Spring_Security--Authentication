@@ -17,19 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/app")
 @RequiredArgsConstructor
-public class AuthController
-{
-private  final AuthenticationManager authenticationManager;
-private final AppUserDetailsService appUserDetailsService;
-private final JwtUtil jwtUtil;
-private final PasswordEncoder passwordEncoder;
+public class AuthController {
+    private final AuthenticationManager authenticationManager;
+    private final AppUserDetailsService appUserDetailsService;
+    private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
-@PostMapping("/login")
-public AuthResponse login(@RequestBody  AuthRequest request)
-{
-authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
-final UserDetails userDetails=appUserDetailsService.loadUserByUsername(request.getEmail());
-final String token=jwtUtil.generateToken(userDetails);
-return new AuthResponse(request.getEmail(),token);
-}
+    @PostMapping("/login")
+    public AuthResponse login(@RequestBody AuthRequest request) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        final UserDetails userDetails = appUserDetailsService.loadUserByUsername(request.getEmail());
+        final String token = jwtUtil.generateToken(userDetails);
+        return new AuthResponse(request.getEmail(), token);
+    }
 }

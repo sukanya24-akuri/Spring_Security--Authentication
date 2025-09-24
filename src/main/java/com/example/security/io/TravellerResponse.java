@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TravellerResponse
-{
+public class TravellerResponse {
     private String name;
     private String email;
     private String password;

@@ -21,37 +21,35 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class AuthenticationFilters extends OncePerRequestFilter
-{
-private final AppUserDetailsService appUserDetailsService;
-private final JwtUtil util;
-private static final List<String> PUBLIC_URL=List.of("/app/login","/app/register");
+public class AuthenticationFilters extends OncePerRequestFilter {
+    private final AppUserDetailsService appUserDetailsService;
+    private final JwtUtil util;
+    private static final List<String> PUBLIC_URL = List.of("/app/login", "/app/register");
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
- final String path=request.getServletPath();
-if(PUBLIC_URL.contains(path))
-{
-    filterChain.doFilter(request, response);
-    return;
-}
-
-    String authHeader = request.getHeader("Authorization");
-
-    if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
-        String token = authHeader.substring(7);
-        String email = util.extractUsername(token);
-
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = appUserDetailsService.loadUserByUsername(email);
-            if(util.isValidate(token,userDetails))
-            {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        final String path = request.getServletPath();
+        if (PUBLIC_URL.contains(path)) {
+            filterChain.doFilter(request, response);
+            return;
         }
-    }
-}
-filterChain.doFilter(request,response);
+
+        String authHeader = request.getHeader("Authorization");
+
+        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            String email = util.extractUsername(token);
+
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = appUserDetailsService.loadUserByUsername(email);
+                if (util.isValidate(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                }
+            }
+        }
+        filterChain.doFilter(request, response);
     }
 }
