@@ -8,17 +8,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
-public class TravellerController {
+public class TravellerControllerAdmin {
     private final TravellerServiceImpls travellerServiceImpls;
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public TravellerResponse createProfile(@RequestBody TravellerRequest request)
     {
-        request.setRole("ROLE_USER");
+        request.setRole("ROLE_ADMIN");
         TravellerResponse response = travellerServiceImpls.create(request);
+
         return response;
     }
 

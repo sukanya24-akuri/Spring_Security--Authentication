@@ -5,7 +5,6 @@ import com.example.security.io.TravellerRequest;
 import com.example.security.io.TravellerResponse;
 import com.example.security.repo.TravellerRepo;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +19,12 @@ public class TravellerServiceImpls implements ITravellerService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public TravellerResponse create(TravellerRequest request) {
+    public TravellerResponse create(TravellerRequest request)
+    {
+
+        if (repo.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
         Traveller traveller = convertToRequest(request);
         traveller = repo.save(traveller);
         return convertToResponse(traveller);
@@ -38,6 +42,7 @@ public class TravellerServiceImpls implements ITravellerService {
         return Traveller.builder().name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
                 .build();
     }
 

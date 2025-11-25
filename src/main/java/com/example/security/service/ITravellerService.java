@@ -7,4 +7,6 @@ public interface ITravellerService {
     public TravellerResponse create(TravellerRequest request);
 
     public TravellerResponse getProfile();
+
+
 }

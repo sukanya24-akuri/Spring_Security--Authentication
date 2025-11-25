@@ -1,5 +1,6 @@
 package com.example.security.io;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +14,6 @@ public class TravellerRequest {
     private String name;
     private String email;
     private String password;
+    private String role;
 
 }

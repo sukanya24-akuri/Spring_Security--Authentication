@@ -24,7 +24,7 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(new Date(System.currentTimeMillis() + 1*60*1000))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
 
@@ -32,6 +32,8 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+String role=userDetails.getAuthorities().stream().findFirst().get().getAuthority();
+claims.put("role",role);
         return createToken(claims, userDetails.getUsername());
 
     }
@@ -40,6 +42,10 @@ public class JwtUtil {
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody();
+    }
+    public String extractRoles(String token)
+    {
+       return extractAllClaims(token).get("role",String.class);
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimReslover) {

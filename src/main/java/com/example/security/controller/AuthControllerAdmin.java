@@ -1,14 +1,10 @@
 package com.example.security.controller;
 
-import com.example.security.entity.RefreshToken;
 import com.example.security.io.AuthRequest;
 import com.example.security.io.AuthResponse;
 import com.example.security.service.AppUserDetailsService;
-import com.example.security.service.RefreshTokenImpl;
 import com.example.security.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,40 +14,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthControllerAdmin {
     private final AuthenticationManager authenticationManager;
     private final AppUserDetailsService appUserDetailsService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
-    private final RefreshTokenImpl refreshTokenimpl;
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         final UserDetails userDetails = appUserDetailsService.loadUserByUsername(request.getEmail());
         final String token = jwtUtil.generateToken(userDetails);
-        RefreshToken refreshToken = refreshTokenimpl.createRefreshToken(request.getEmail());
-        return new AuthResponse(refreshToken.getToken(), token);
+        return new AuthResponse(request.getEmail(), token);
     }
-
-@PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody Map<String,String> token)
-    {
-        String retoken=token.get("refreshToken");
-RefreshToken refreshToken=refreshTokenimpl.getToken(retoken).orElseThrow(() -> new RuntimeException("Invalid refresh token"));
-refreshTokenimpl.checkExpiration(refreshToken);
-UserDetails userDetails=appUserDetailsService.loadUserByUsername(refreshToken.getEmail());
-String newAccessToken=jwtUtil.generateToken(userDetails);
-        RefreshToken refreshtoken=refreshTokenimpl.createRefreshToken(refreshToken.getEmail());
-        return ResponseEntity.ok(Map.of(
-                "accessToken", newAccessToken,
-                "refreshToken", refreshtoken.getToken()
-        ));
-    }
-
 }
